@@ -1,0 +1,25 @@
+parameters:
+    app.repository.bank_account.class: AppBundle\Entity\BankAccount
+
+services:
+    app.service.utils:
+        class: AppBundle\Services\Utils
+        arguments: []
+
+    app.service.class_meta_data:
+      class: Doctrine\ORM\Mapping\ClassMetadata
+      arguments: [ "%app.repository.bank_account.class%"]
+
+    app.entity.bank_account:
+        class: "%app.repository.bank_account.class%"
+        arguments: []
+
+    app.repository.bank_account:
+            class: AppBundle\Repository\BankAccountRepository
+            factory_service: "@doctrine.orm.default_entity_manager"
+            factory_method: "getRepository"
+            arguments: ["@doctrine.orm.default_entity_manager", "@app.service.class_meta_data"]
+
+    app.service.bank_account_manager:
+        class: AppBundle\Adapter\BankAccountManager
+        arguments: ["@doctrine.orm.default_entity_manager", "@logger", "@app.repository.bank_account"]
